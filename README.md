@@ -10,7 +10,9 @@ A Chrome extension that records DOM mutations and user interactions, producing L
 - **LLM-Ready Export** - Generates structured Markdown with semantic element descriptions
 - **Session Management** - List, view, and delete past recording sessions
 - **Sensitive Domain Warnings** - Alerts when recording on banking, healthcare, or auth sites
+- **Totally local** - No data leave your system, you can delete it whenever you want
 
+  
 ## Installation
 
 ### From Source
