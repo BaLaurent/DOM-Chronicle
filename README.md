@@ -114,4 +114,6 @@ New element appeared in `form#contact-form`:
 
 ## License
 
-MIT
+Source Available - Non-Commercial
+
+Free for personal, educational, and research use. Commercial use requires a license agreement. See [LICENSE](LICENSE) for details.
