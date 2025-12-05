@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Chronicle - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">●</span>
+        <h1>DOM Chronicle Settings</h1>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- General Settings -->
+      <section class="section">
+        <h2 class="section-title">General Settings</h2>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="capture-scroll">
+            <span>Capture scroll events</span>
+          </label>
+          <p class="help-text">Record scroll position changes (may increase data size)</p>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label" for="debounce-ms">Input debounce (ms)</label>
+          <input type="number" id="debounce-ms" min="50" max="500" step="50" value="100">
+          <p class="help-text">Delay before capturing input events (50-500ms)</p>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label" for="max-events">Max events per minute</label>
+          <input type="number" id="max-events" min="100" max="5000" step="100" value="1000">
+          <p class="help-text">Throttle limit to prevent performance issues</p>
+        </div>
+      </section>
+
+      <!-- Export Settings -->
+      <section class="section">
+        <h2 class="section-title">Export Settings</h2>
+        <p class="section-description">Configure how recordings are exported to Markdown.</p>
+
+        <div class="form-group">
+          <label class="input-label" for="max-initial-html">Max initial HTML size (KB)</label>
+          <input type="number" id="max-initial-html" min="0" max="1000" step="10" value="100">
+          <p class="help-text">0 = unlimited. Larger pages will be truncated.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label" for="diff-mode">Diff display mode</label>
+          <select id="diff-mode">
+            <option value="line">Line-by-line diff</option>
+            <option value="element">Whole element with +/- prefix</option>
+          </select>
+          <p class="help-text">How to display DOM changes in exports</p>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="include-parent-context" checked>
+            <span>Include parent context for structural changes</span>
+          </label>
+          <p class="help-text">Captures before/after state for add/remove mutations (uses more storage)</p>
+        </div>
+      </section>
+
+      <!-- Redaction Rules -->
+      <section class="section">
+        <h2 class="section-title">Redaction Rules</h2>
+        <p class="section-description">Configure which data should be automatically redacted before storage.</p>
+
+        <!-- Default Rules -->
+        <div class="rules-group">
+          <h3 class="rules-group-title">Default Rules</h3>
+          <div id="default-rules" class="rules-list">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Custom Rules -->
+        <div class="rules-group">
+          <h3 class="rules-group-title">Custom Rules</h3>
+          <div id="custom-rules" class="rules-list">
+            <!-- Populated by JavaScript -->
+          </div>
+          <button id="btn-add-rule" class="btn btn-secondary">
+            + Add Custom Rule
+          </button>
+        </div>
+      </section>
+
+      <!-- Data Management -->
+      <section class="section">
+        <h2 class="section-title">Data Management</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="total-sessions">0</div>
+            <div class="stat-label">Total Sessions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="total-events">0</div>
+            <div class="stat-label">Total Events</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="storage-used">0 KB</div>
+            <div class="stat-label">Storage Used</div>
+          </div>
+        </div>
+
+        <!-- Sessions List -->
+        <div class="sessions-group">
+          <h3 class="sessions-group-title">Sessions</h3>
+          <div id="sessions-list" class="sessions-list">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button id="btn-export-all" class="btn btn-secondary">
+            Export All Sessions
+          </button>
+          <button id="btn-clear-all" class="btn btn-danger">
+            Clear All Data
+          </button>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section class="section">
+        <h2 class="section-title">About</h2>
+        <p class="about-text">
+          DOM Chronicle v1.0.0<br>
+          Records DOM changes and exports LLM-ready Markdown.
+        </p>
+      </section>
+    </main>
+
+    <!-- Save Status -->
+    <div id="save-status" class="save-status" hidden>
+      Settings saved
+    </div>
+  </div>
+
+  <!-- Custom Rule Modal -->
+  <dialog id="rule-modal" class="modal">
+    <form id="rule-form" class="modal-content">
+      <h3 class="modal-title">Add Custom Rule</h3>
+
+      <div class="form-group">
+        <label class="input-label" for="rule-name">Rule Name</label>
+        <input type="text" id="rule-name" required placeholder="e.g., API Keys">
+      </div>
+
+      <div class="form-group">
+        <label class="input-label" for="rule-type">Rule Type</label>
+        <select id="rule-type" required>
+          <option value="regex">Regex Pattern</option>
+          <option value="selector">CSS Selector</option>
+          <option value="input-type">Input Type</option>
+          <option value="attribute">Attribute Name</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="input-label" for="rule-pattern">Pattern</label>
+        <input type="text" id="rule-pattern" required placeholder="e.g., [A-Za-z0-9_]{32}">
+        <p class="help-text" id="pattern-help">Regular expression to match</p>
+      </div>
+
+      <div class="form-group">
+        <label class="input-label" for="rule-replacement">Replacement</label>
+        <input type="text" id="rule-replacement" value="[REDACTED]" placeholder="e.g., [API_KEY]">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="btn-cancel-rule" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Rule</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>
